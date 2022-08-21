@@ -11,7 +11,7 @@ fn main() {
     let matches = App::new("autocref")
         .version(crate_version!())
         .author("Bryan Lammon")
-        .about("A Pandoc post-processor for cross-references in legal scholarship")
+        .about("A Supra + Pandoc post-processor for footnote cross-references")
         .arg(
             Arg::with_name("doc_input")
                 .value_name("DOCUMENT.XML FILE")
