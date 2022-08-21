@@ -1,0 +1,20 @@
+[package]
+name = "autocref"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "3.2.17", features = ["cargo"] }
+lazy_static = "1.4.0"
+regex = "1"
+slog = "2.7.0"
+#slog = { version = "2.7.0 ", features = ["max_level_trace", "release_max_level_debug"] }
+slog-async = "2.7.0"
+slog-scope = "4.4.0"
+slog-term = "2.8.0"
+
+[profile.release]
+opt-level = 3
+lto = true
