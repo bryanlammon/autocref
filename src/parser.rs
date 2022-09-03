@@ -70,7 +70,7 @@ type ParseResults<'a> = (Vec<Branch<'a>>, Vec<Branch<'a>>, Vec<u32>);
 pub fn parser<'a>(
     doc_tokens: &'a [Token<'a>],
     fn_tokens: &'a [Token<'a>],
-) -> Result<ParseResults, String> {
+) -> Result<ParseResults<'a>, String> {
     debug!(slog_scope::logger(), "Starting parser...");
 
     let doc_branches =
