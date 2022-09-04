@@ -8,7 +8,7 @@ fn test_autocref() {
     let _ = autocref::autocref(input, output);
 
     // Load the output
-    let (doc, fns) = autocref::docx::read_docx(output).unwrap();
+    let (doc, fns, _) = autocref::docx::read_docx(output).unwrap();
     let doc_target = fs::read_to_string(Path::new("./tests/test-docs/doc-targ.xml")).unwrap();
     let fns_target = fs::read_to_string(Path::new("./tests/test-docs/fns-targ.xml")).unwrap();
 

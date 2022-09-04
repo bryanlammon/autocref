@@ -14,7 +14,7 @@ use std::path::Path;
 /// `.xml` files with additional markup.
 pub fn autocref(input: &Path, output: &Path) -> Result<(), String> {
     // Read docxument.xml and footnotes.xml from the .docx file
-    let (mut doc, mut fns) =
+    let (mut doc, mut fns, docx) =
         match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "read_docx()")), || {
             docx::read_docx(input)
         }) {
@@ -59,7 +59,7 @@ pub fn autocref(input: &Path, output: &Path) -> Result<(), String> {
 
     // Write the .docx file
     match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "read_docx()")), || {
-        docx::write_docx(input, doc, fns, output)
+        docx::write_docx(docx, doc, fns, output)
     }) {
         Ok(_) => (),
         Err(e) => return Err(e),
