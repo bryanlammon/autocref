@@ -4,10 +4,6 @@ AutoCref is a [Supra](https://github.com/bryanlammon/supra) and [Pandoc](https:/
 
 - [About](#about)
 - [Usage](#usage)
-  - [1. Unzip the .docx File](#1-unzip-the-docx-file)
-  - [2. Run AutoCref Inside the Archive](#2-run-autocref-inside-the-archive)
-  - [3. Zip the Files Into a .docx File](#3-zip-the-files-into-a-docx-file)
-  - [Makefile](#makefile)
 - [Changelog](#changelog)
 
 ## About
@@ -33,7 +29,8 @@ Some more text.^[*See* *supra* notes [?id1]–[?id2].]
 Some text.^[*See* Jones, *supra* note 1, at 100.]
 Some more text.^[*See* *supra* notes 1–2.]
 
-# After Pandoc creates a .docx file, AutoCref will change the numbers 1 and 2 into automatically updating numbers.
+# After Pandoc creates a .docx file, AutoCref will change the numbers 1 and 2
+# into automatically updating numbers.
 ```
 
 AutoCref recognizes two kinds of cross-references: (1) those to a single number, and (2) those in a range (*e.g.*, "notes 10–12").
@@ -44,60 +41,21 @@ Sets of cross-references (*e.g.*, "notes 10 & 12") are not supported at this tim
 
 ## Usage
 
-Using AutoCref involves three steps.
-First you must unzip the `.docx` file.
-Then you run AutoCref.
-Then you re-zip the `.docx` file.
-
-### 1. Unzip the .docx File
-
-First, the `.docx` file must be unzipped into its own directory.
+AutoCref requires an input `.docx` file.
+You can follow that with an optional output `.docx` file.
+If no output is provided, AutoCref will overwrite the input.
 
 ```zsh
-unzip example.docx -d example-contents
+# Overwriting the input
+autocref input.docx
+
+# Setting an output
+autocref input.docx output.docx
 ```
-
-### 2. Run AutoCref Inside the Archive
-
-Move to the directory into which you unzipped the `.docx` file and run AutoCref.
-
-```zsh
-cd example-contents
-autocref
-```
-
-By default, AutoCref will alter the `document.xml` and `footnotes.xml` in the `./word/` subdirectory.
-If for some reason you want to set different files, you can set the `document.xml` and `footnotes.xml` files by providing filenames after `autocref`.
-The `document.xml` filename must come first.
-The `footnotes.xml` filename must come second.
-
-### 3. Zip the Files Into a .docx File
-
-Then re-zip the files in that directory into a .docx file.
-
-```zsh
-zip -r example.docx *
-```
-
-`zip` should be run inside the directory into which you unzipped the `.docx` contents.
-After re-zipping, move the new `.docx` file to wherever you want to keep it.
-You can then delete the directory containing the `.docx` contents.
-
-### Makefile
 
 Probably the easiest way to use AutoCref is adding it to the Makefile used for Supra and Pandoc.
-The following lines can come after those for Pandoc:
-
-```Makefile
-unzip example.docx -d autocref-temp; \
-cd autocref-temp; \
-autocref; \
-zip -r example.docx *; \
-mv example.docx ../; \
-cd ..; \
-rm -r autocref-temp
-```
 
 ## Changelog
 
 * 0.1.0: Initial release
+* 0.2.0: Runs on `.docx` files directly

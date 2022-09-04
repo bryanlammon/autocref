@@ -14,18 +14,16 @@ fn main() {
         .about("A Supra + Pandoc post-processor for footnote cross-references")
         .arg(
             Arg::with_name("input")
-                .short('i')
-                .long("input")
                 .value_name("INPUT FILE")
                 .help("The .docx file to process")
+                .index(1)
                 .required(true),
         )
         .arg(
             Arg::with_name("output")
-                .short('o')
-                .long("output")
                 .value_name("OUTPUT FILE")
-                .help("The .docx file to output (blank overwrites input)"),
+                .help("The .docx file to output (blank overwrites input)")
+                .index(2),
         )
         .arg(
             Arg::with_name("verbose")
