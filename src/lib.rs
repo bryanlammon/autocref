@@ -1,21 +1,31 @@
 mod bookmarks;
-pub mod fs;
+pub mod docx;
 mod lexer;
 mod parser;
 mod render;
 
 use slog::o;
+use std::path::Path;
 
 /// The primary function.
 ///
 /// This function determines which bookmark id to start with and then runs the
 /// lexer, parser, and renderer, eventually outputting the contents of the two
 /// `.xml` files with additional markup.
-pub fn autocref(doc_input: &str, fn_input: &str) -> Result<(String, String), String> {
+pub fn autocref(input: &Path, output: &Path) -> Result<(), String> {
+    // Read docxument.xml and footnotes.xml from the .docx file
+    let (mut doc, mut fns) =
+        match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "read_docx()")), || {
+            docx::read_docx(input)
+        }) {
+            Ok(x) => x,
+            Err(e) => return Err(e),
+        };
+
     // Determine the starting bookmark id number
     let starting_bookmark = match slog_scope::scope(
         &slog_scope::logger().new(o!("fn" => "starting_bookmark()")),
-        || bookmarks::starting_bookmark(doc_input),
+        || bookmarks::starting_bookmark(&doc),
     ) {
         Ok(i) => i,
         Err(e) => return Err(e),
@@ -24,7 +34,7 @@ pub fn autocref(doc_input: &str, fn_input: &str) -> Result<(String, String), Str
     // Lex the inputs
     let (doc_tokens, fn_tokens) =
         match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "lex()")), || {
-            lexer::lex(doc_input, fn_input)
+            lexer::lex(&doc, &fns)
         }) {
             Ok(t) => t,
             Err(e) => return Err(e),
@@ -40,13 +50,20 @@ pub fn autocref(doc_input: &str, fn_input: &str) -> Result<(String, String), Str
         };
 
     // Render the output
-    let (doc_output, fn_output) =
-        match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "render()")), || {
-            render::render(&doc_branches, refd_fns, starting_bookmark, &fn_branches)
-        }) {
-            Ok(t) => t,
-            Err(e) => return Err(e),
-        };
+    (doc, fns) = match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "render()")), || {
+        render::render(&doc_branches, refd_fns, starting_bookmark, &fn_branches)
+    }) {
+        Ok(t) => t,
+        Err(e) => return Err(e),
+    };
 
-    Ok((doc_output, fn_output))
+    // Write the .docx file
+    match slog_scope::scope(&slog_scope::logger().new(o!("fn" => "read_docx()")), || {
+        docx::write_docx(input, doc, fns, output)
+    }) {
+        Ok(_) => (),
+        Err(e) => return Err(e),
+    };
+
+    Ok(())
 }

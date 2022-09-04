@@ -1,15 +1,17 @@
-use std::path::Path;
+use std::{fs, path::Path};
 
 #[test]
 fn test_autocref() {
-    let doc_input = autocref::fs::load_file(Path::new("./tests/test-docs/doc-orig.xml")).unwrap();
-    let doc_target =
-        autocref::fs::load_file(Path::new("./tests/test-docs/doc-target.xml")).unwrap();
-    let fn_input = autocref::fs::load_file(Path::new("./tests/test-docs/fn-orig.xml")).unwrap();
-    let fn_target = autocref::fs::load_file(Path::new("./tests/test-docs/fn-target.xml")).unwrap();
+    // Process the test file
+    let input = Path::new("./tests/test-docs/test-doc.docx");
+    let output = Path::new("./tests/test-docs/test-doc-edited.docx");
+    let _ = autocref::autocref(input, output);
 
-    let (doc_output, fn_output) = autocref::autocref(&doc_input, &fn_input).unwrap();
+    // Load the output
+    let (doc, fns) = autocref::docx::read_docx(output).unwrap();
+    let doc_target = fs::read_to_string(Path::new("./tests/test-docs/doc-targ.xml")).unwrap();
+    let fns_target = fs::read_to_string(Path::new("./tests/test-docs/fns-targ.xml")).unwrap();
 
-    assert_eq!(doc_output, doc_target);
-    assert_eq!(fn_output, fn_target);
+    assert_eq!(doc, doc_target.trim());
+    assert_eq!(fns, fns_target.trim());
 }
