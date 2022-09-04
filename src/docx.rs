@@ -1,5 +1,5 @@
 use std::{
-    fs::File,
+    fs,
     io::{Read, Write},
     path::Path,
 };
@@ -10,7 +10,7 @@ use zip::{write, CompressionMethod, ZipArchive, ZipWriter};
 /// This function takes the path to the `.docx` file and reads the
 /// `document.xml` and `footnotes.xml` files, outputting their contents as
 /// strings.
-pub fn read_docx(input_path: &Path) -> Result<(String, String, ZipArchive<File>), String> {
+pub fn read_docx(input_path: &Path) -> Result<(String, String), String> {
     // Load the .docx file
     let docx_file = match std::fs::File::open(input_path) {
         Ok(f) => f,
@@ -36,7 +36,7 @@ pub fn read_docx(input_path: &Path) -> Result<(String, String, ZipArchive<File>)
         .read_to_string(&mut fns)
         .unwrap();
 
-    Ok((doc, fns, docx))
+    Ok((doc, fns))
 }
 
 /// Write the new `.docx` file.
@@ -45,17 +45,24 @@ pub fn read_docx(input_path: &Path) -> Result<(String, String, ZipArchive<File>)
 /// (needed because that variable is dropped after reading). It then creates the
 /// output file, replacing the contents of `document.xml` and `footnotes.xml`.
 pub fn write_docx(
-    mut docx: ZipArchive<File>,
-    //input_path: &Path,
+    input_path: &Path,
     doc: String,
     fns: String,
     output_path: &Path,
 ) -> Result<(), String> {
     // Load the .docx file
-    //let docx_file = std::fs::File::open(input_path).unwrap();
+    let docx_file = std::fs::File::open(input_path).unwrap();
 
     // Create a ZipArchive from the .docx file
-    //let mut docx = ZipArchive::new(docx_file).unwrap();
+    let mut docx = ZipArchive::new(docx_file).unwrap();
+
+    // If the input and output are the same, delete the input so it can be overwritten
+    if input_path == output_path {
+        match fs::remove_file(input_path) {
+            Ok(_) => (),
+            Err(e) => return Err(format!("Cannot overwrite input ({:?})", e)),
+        }
+    }
 
     // Create a ZipWriter and its options (.docx compression is Deflated)
     let output_file = std::fs::File::create(output_path).unwrap();
