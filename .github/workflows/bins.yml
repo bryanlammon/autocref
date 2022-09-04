@@ -1,4 +1,4 @@
-name: Save Linux & Windows Binaries
+name: Create Linux & Windows Binaries
 
 on:
   workflow_dispatch:
