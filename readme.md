@@ -1,5 +1,7 @@
 # AutoCref <!-- omit in toc -->
 
+**AutoCref's functionality has been integrated into [Supra](https://github.com/bryanlammon/supra). So it's no longer necessary or functioning. Use Supra instead.**
+
 AutoCref is a [Supra](https://github.com/bryanlammon/supra) and [Pandoc](https://pandoc.org) post-processor that turns footnote cross-references in a Word document into automatically updated fields.
 
 - [About](#about)
